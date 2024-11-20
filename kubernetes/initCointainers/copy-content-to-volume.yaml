@@ -1,0 +1,25 @@
+extraVolumeMounts:
+  - name: themes
+    mountPath: /opt/bitnami/keycloak/themes
+
+extraVolumes:
+  - name: themes
+    emptyDir: {}
+
+initContainers:
+  - name: custom-themes
+    image: ruanbekker/my-custom-image:latest
+    imagePullPolicy: Always
+    securityContext:
+      runAsUser: 1001
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        set -x
+        cd /opt/downloads
+        for file in *-theme*.jar; do 
+          cp -v $file /themes/$file
+        done
+    volumeMounts:
+      - name: themes
+        mountPath: /themes
